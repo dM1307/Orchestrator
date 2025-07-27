@@ -8,16 +8,15 @@
 
 ```mermaid
 graph TD
-    UI[🌐 NGINX (Reverse Proxy)] --> AirflowWeb[🌬️ Airflow Webserver]
-    AirflowWeb --> Scheduler[📅 Airflow Scheduler]
-    Scheduler --> Worker1[⚙️ Celery Worker 1]
-    Scheduler --> Worker2[⚙️ Celery Worker 2]
-    Scheduler --> Flower[📊 Flower Dashboard]
-    Scheduler --> Postgres[(🛢️ PostgreSQL)]
-    Scheduler --> Redis[(📥 Redis Broker)]
-    Worker1 --> Redis
-    Worker2 --> Redis
-```
+  A[🌐 NGINX (Reverse Proxy)] --> B[🧠 Airflow Webserver]
+  B --> C[📅 Scheduler]
+  C --> D[⚙️ Workers]
+  D --> E[(🧠 DAGs/Tasks)]
+  B --> F[(📂 DAGs Volume)]
+  D --> F
+  C --> G[(📊 Metadata DB - PostgreSQL)]
+  D --> G
+  G --> H[(📜 Logs - Mounted Volume)]
 
 ---
 
