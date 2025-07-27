@@ -17,6 +17,7 @@ graph TD
   C --> G[(📊 Metadata DB - PostgreSQL)]
   D --> G
   G --> H[(📜 Logs - Mounted Volume)]
+```
 
 ---
 
