@@ -7,16 +7,17 @@
 ## 📐 Architecture Overview
 
 ```mermaid
+%%{init: {'theme': 'default'}}%%
 graph TD
-  A[NGINX (Reverse Proxy)] --> B[Airflow Webserver]
-  B --> C[Scheduler]
-  C --> D[Workers]
-  D --> E[(DAGs/Tasks)]
-  B --> F[(DAGs Volume)]
+  A[🌐 NGINX (Reverse Proxy)] --> B[🧠 Airflow Webserver]
+  B --> C[📅 Scheduler]
+  C --> D[⚙️ Workers]
+  D --> E[(🧠 DAGs/Tasks)]
+  B --> F[(📂 DAGs Volume)]
   D --> F
-  C --> G[(Metadata DB - PostgreSQL)]
+  C --> G[(📊 Metadata DB - PostgreSQL)]
   D --> G
-  G --> H[(Logs - Mounted Volume)]
+  G --> H[(📜 Logs - Mounted Volume)]
 
 ---
 
