@@ -1,0 +1,132 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+    networks:
+      - airflow
+
+  redis:
+    image: redis:6
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - airflow
+
+  airflow-webserver:
+    build:
+      context: ./airflow
+    container_name: airflow-webserver
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/0
+      - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres/airflow
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow:/usr/local/airflow
+    networks:
+      - airflow
+
+  airflow-scheduler:
+    build:
+      context: ./airflow
+    container_name: airflow-scheduler
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/0
+      - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres/airflow
+    volumes:
+      - ./airflow:/usr/local/airflow
+    networks:
+      - airflow
+
+  airflow-worker:
+    build:
+      context: ./airflow
+    container_name: airflow-worker
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/0
+      - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres/airflow
+    volumes:
+      - ./airflow:/usr/local/airflow
+    networks:
+      - airflow
+
+  airflow-triggerer:
+    build:
+      context: ./airflow
+    container_name: airflow-triggerer
+    restart: always
+    depends_on:
+      - airflow-scheduler
+    env_file:
+      - .env
+    command: triggerer
+    volumes:
+      - ../chronos-dags/dags:/opt/airflow/dags
+      - ../chronos-dags/plugins:/opt/airflow/plugins
+      - ../chronos-dags/conf:/opt/airflow/conf
+    networks:
+      - airflow
+
+  flower:
+    build:
+      context: ./airflow
+    container_name: airflow-flower
+    restart: always
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    command: celery flower
+    ports:
+      - "5555:5555"
+    networks:
+      - airflow
+
+  nginx:
+    build:
+      context: ./nginx
+    container_name: nginx
+    depends_on:
+      - airflow-webserver
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - airflow
+
+volumes:
+  postgres-db-volume:
+
+networks:
+  airflow:
+    driver: bridge
