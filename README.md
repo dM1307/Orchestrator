@@ -7,7 +7,6 @@
 ## 📐 Architecture Overview
 
 ```mermaid
-%%{init: {'theme': 'default'}}%%
 graph TD
   A[🌐 NGINX (Reverse Proxy)] --> B[🧠 Airflow Webserver]
   B --> C[📅 Scheduler]
