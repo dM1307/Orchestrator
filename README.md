@@ -189,12 +189,6 @@ docker logs airflow-worker
 
 ---
 
-## 📘 License
-
-MIT License © 2025 Dinesh Maharana
-
----
-
 ## 🙌 Contributions Welcome
 
 - Found a bug? Open an issue
