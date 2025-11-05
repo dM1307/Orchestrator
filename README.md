@@ -189,13 +189,6 @@ docker logs airflow-worker
 
 ---
 
-## 🙌 Contributions Welcome
-
-- Found a bug? Open an issue
-- Want to contribute? Send a PR
-- Questions? Contact the maintainer
-
----
 
 ## 🛠 Built With
 
